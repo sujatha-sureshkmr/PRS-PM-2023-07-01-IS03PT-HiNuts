@@ -1,0 +1,14 @@
+pip install Flask
+pip install glob
+pip install torch
+pip install torchvision
+pip install shutils
+pip install Werkzeug
+pip install pandas
+pip install opencv-python
+pip install numpy
+pip install matplotlib
+pip install ultralytics
+pip install pycopy-xml.etree.ElementTree
+pip install Pillow
+pip install pathlib
