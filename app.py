@@ -201,7 +201,7 @@ def request_recognition():
     print(sel_objdmodel)
     sel_segmodels = input_data[1]
     print(str(sel_segmodels))
-    df2 = pd.DataFrame(columns=['date_time','filename','x1','y1','x2','y2','confidence','class','x_final_centre_point','y_final_centre_point','zone'])
+    df2 = pd.DataFrame(columns=['date_time','filename','x1','y1','x2','y2','confidence','class','x_final_centre_point','y_final_centre_point','x_coordinate_in_mm','y_coordinate_in_mm','zone'])
     model = YOLO('static/models/'+sel_objdmodel)  # load a pretrained model (recommended for training)
 
     model_2 = YOLO('static/models/'+sel_segmodels)  # load a pretrained model (recommended for training)
@@ -210,7 +210,7 @@ def request_recognition():
     files = os.listdir(app.config['UPLOAD_PATH'])
     
     df = pd.DataFrame(recognition(model,model_2))
-    df2 = df[['date_time','filename','x1','y1','x2','y2','confidence','class','x_final_centre_point','y_final_centre_point','zone']]
+    df2 = df[['date_time','filename','x1','y1','x2','y2','confidence','class','x_final_centre_point','y_final_centre_point','x_coordinate_in_mm','y_coordinate_in_mm','zone']]
     hists = os.listdir('static/uploads')
     hists = ['static/uploads/' + file for file in hists]
     
@@ -282,7 +282,7 @@ def recognition(model,model_2):
     # infer on a local image
     #print(model.predict(PATH_TO_IMAGE, confidence=40, overlap=30).json())
     
-    df2 = pd.DataFrame(columns=['date_time','filename','x1','y1','x2','y2','confidence','class','x_final_centre_point','y_final_centre_point','zone'])
+    df2 = pd.DataFrame(columns=['date_time','filename','x1','y1','x2','y2','confidence','class','x_final_centre_point','y_final_centre_point','x_coordinate_in_mm','y_coordinate_in_mm','zone'])
    
     for files in glob(app.config['UPLOAD_PATH']+"/*.jpg"):
         cameracalibration(files)
@@ -372,6 +372,8 @@ def recognition(model,model_2):
             #img = Image.open(os.path.join(path, "img2.jpg"))
         df['x_final_centre_point'] = df['x1']+df['center_x']
         df['y_final_centre_point'] = df['y1']+df['center_y']
+        df['x_coordinate_in_mm'] = df['x_final_centre_point']*0.1697168
+        df['y_coordinate_in_mm'] = df['y1']+df['center_y']*0.1697168
         img = Image.open(os.path.join(app.config['PROCESSED_PATH'], filename))
         draw = ImageDraw.Draw(img)
         #draw.polygon(polygon,outline=(0,255,0), width=5)
@@ -397,7 +399,7 @@ def recognition(model,model_2):
         #df2 = 
         print('df2.shape PRE',df2.shape)
         print('df.shape',df.shape)
-        df_inter = df[['date_time','filename','x1','y1','x2','y2','confidence','class','x_final_centre_point','y_final_centre_point','zone']]
+        df_inter = df[['date_time','filename','x1','y1','x2','y2','confidence','class','x_final_centre_point','y_final_centre_point','x_coordinate_in_mm','y_coordinate_in_mm','zone']]
         df2 = pd.concat([df2, df_inter], ignore_index=True)
         #df2.append(df[['date_time','filename','x1','y1','x2','y2','confidence','class','x_final_centre_point','y_final_centre_point','zone']])
         print('df2.shape POST',df2.shape)
