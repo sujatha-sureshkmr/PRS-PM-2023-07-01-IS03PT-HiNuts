@@ -142,7 +142,7 @@ def upload_files():
     '''for filename_ups in Path(app.config['UPLOAD_PATH']).glob("*.jpg"):
         filename_ups.unlink()'''
     for zippath in Path('static/uploads/').glob("*"):
-        print('remove files',zippath)
+        #print('remove files',zippath)
         os.remove(zippath)
     for filename_pro in Path('static/processed/').glob("*"):
         os.remove(filename_pro)
