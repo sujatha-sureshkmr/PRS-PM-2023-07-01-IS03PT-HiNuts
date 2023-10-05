@@ -38,7 +38,7 @@ calib_filename = os.path.join(os.path.join('static/', 'models'), 'savecoeefficie
 
 app = Flask(__name__)
 app.config['MAX_CONTENT_LENGTH'] = 10 * 1024 * 1024
-app.config['UPLOAD_EXTENSIONS'] = ['.jpg', '.png', '.gif']
+app.config['UPLOAD_EXTENSIONS'] = ['.jpg', '.jpeg']
 #app.config['UPLOAD_PATH'] = 'uploads'
 
 app.config['UPLOAD_PATH'] = os.path.join('static/', 'uploads/')
@@ -141,14 +141,15 @@ def index():
 def upload_files():
     '''for filename_ups in Path(app.config['UPLOAD_PATH']).glob("*.jpg"):
         filename_ups.unlink()'''
-    for zippath in glob(os.path.join(app.config['UPLOAD_PATH'], "**/*")):
+    for zippath in Path('static/uploads/').glob("*"):
+        print('remove files',zippath)
         os.remove(zippath)
-    for zippath in glob(os.path.join(app.config['PROCESSED_PATH'], "**/*")):
-        os.remove(zippath)
-    for zippath in glob(os.path.join(app.config['RECOGNIZED_PATH'], "**/*")):
-        os.remove(zippath)
-    for zippath in glob(os.path.join(app.config['SEGMENT_PATH'], "**/*")):
-        os.remove(zippath)
+    for filename_pro in Path('static/processed/').glob("*"):
+        os.remove(filename_pro)
+    for filename_rec in Path('static/recognized/').glob("*.jpg"):
+        os.remove(filename_rec)
+    for filename_seg in Path('static/segment/').glob("*.jpg"):
+        os.remove(filename_seg)
     '''
     for filename_pro in Path(app.config['PROCESSED_PATH']).glob("*.jpg"):
         print('filename_pro',filename_pro)
@@ -313,7 +314,7 @@ def recognition(model,model_2):
         df['center_y']=0
         df['crop_x1']=0
         df['crop_y1']=0
-        df['zone']=0
+        df['zone']=-1
         df['polygon']=''
  
         df = df[df['class'] <= 10].reset_index()
@@ -390,8 +391,9 @@ def recognition(model,model_2):
           )
 
         img.save(os.path.join(app.config['SEGMENT_PATH'], filename))
-
-        df['zone']= df.apply(lambda x: get_zone(x.x1,x.y1), axis=1)
+        #print('Error state trouble shooting',df.shape)
+        if len(df) >0:
+            df['zone']= df.apply(lambda x: get_zone(x.x1,x.y1), axis=1)
         #df2 = 
         print('df2.shape PRE',df2.shape)
         print('df.shape',df.shape)
